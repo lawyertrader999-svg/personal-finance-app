@@ -1,36 +1,177 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Finance App 💰
 
-## Getting Started
+แอปพลิเคชันวางแผนการเงินส่วนบุคคล (MVP) ที่พัฒนาด้วย Next.js, Tailwind CSS และ Supabase
 
-First, run the development server:
+## ✨ ฟีเจอร์หลัก
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 🔐 ระบบผู้ใช้
+- สมัครสมาชิกและเข้าสู่ระบบด้วย Supabase Auth
+- การจัดการ profile ผู้ใช้
+- ความปลอดภัยด้วย Row Level Security (RLS)
+
+### 💸 บันทึกรายรับ-รายจ่าย
+- เพิ่ม แก้ไข และลบรายการธุรกรรม
+- จัดหมวดหมู่รายรับและรายจ่าย
+- กรองข้อมูลตามเดือน
+- แสดงสรุปยอดรวมแบบ real-time
+
+### 🎯 ตั้งงบประมาณรายเดือน
+- กำหนดงบประมาณสำหรับแต่ละหมวดหมู่
+- ติดตามการใช้จ่ายด้วย Progress Bar
+- แจ้งเตือนเมื่อใกล้หมดงบประมาณหรือเกินงบ
+- แสดงสถานะด้วยสีที่แตกต่างกัน
+
+### 📊 แดชบอร์ดและรายงาน
+- สรุปภาพรวมการเงินรายเดือน
+- กราฟแท่งเปรียบเทียบรายรับ vs รายจ่าย
+- กราฟวงกลมแสดงสัดส่วนรายจ่ายตามหมวดหมู่
+- แสดงรายการธุรกรรมล่าสุด
+- ความคืบหน้างบประมาณแบบ visual
+
+## 🛠️ เทคโนโลยีที่ใช้
+
+- **Frontend**: Next.js 15, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Deployment**: Vercel
+
+## 🚀 การติดตั้งและรัน
+
+### ข้อกำหนดเบื้องต้น
+- Node.js 18+ 
+- npm หรือ yarn
+- บัญชี Supabase
+
+### ขั้นตอนการติดตั้ง
+
+1. **Clone repository**
+   ```bash
+   git clone <repository-url>
+   cd personal-finance-app
+   ```
+
+2. **ติดตั้ง dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **ตั้งค่า Environment Variables**
+   
+   สร้างไฟล์ `.env.local` และเพิ่มข้อมูลต่อไปนี้:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **ตั้งค่าฐานข้อมูล**
+   
+   รัน SQL script ใน `database.sql` ใน Supabase SQL Editor
+
+5. **รันแอปพลิเคชัน**
+   ```bash
+   npm run dev
+   ```
+
+   เปิดเบราว์เซอร์ที่ `http://localhost:3000`
+
+## 📁 โครงสร้างโปรเจกต์
+
+```
+src/
+├── app/                    # App Router pages
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication pages
+│   ├── budgets/           # Budget management
+│   ├── transactions/      # Transaction management
+│   └── page.tsx           # Dashboard (home page)
+├── components/            # Reusable components
+│   ├── AuthForm.tsx
+│   ├── Layout.tsx
+│   ├── TransactionForm.tsx
+│   ├── BudgetList.tsx
+│   └── ...
+├── contexts/              # React contexts
+│   └── AuthContext.tsx
+└── lib/                   # Utilities and configurations
+    ├── supabase.ts
+    └── utils.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗄️ โครงสร้างฐานข้อมูล
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ตารางหลัก
+- **profiles**: ข้อมูลผู้ใช้เพิ่มเติม
+- **categories**: หมวดหมู่รายรับ-รายจ่าย
+- **transactions**: บันทึกธุรกรรมทั้งหมด
+- **budgets**: งบประมาณรายเดือน
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ความสัมพันธ์
+- ผู้ใช้หนึ่งคนมีได้หลาย categories, transactions, budgets
+- Transaction แต่ละรายการเชื่อมโยงกับ category หนึ่งรายการ
+- Budget แต่ละรายการเชื่อมโยงกับ category หนึ่งรายการ
 
-## Learn More
+## 🔒 ความปลอดภัย
 
-To learn more about Next.js, take a look at the following resources:
+- **Row Level Security (RLS)**: ผู้ใช้เข้าถึงได้เฉพาะข้อมูลของตนเอง
+- **Authentication**: ใช้ Supabase Auth สำหรับการจัดการผู้ใช้
+- **API Protection**: API routes ตรวจสอบ user authentication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 UI/UX Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Responsive Design**: ใช้งานได้ทั้งเดสก์ท็อปและมือถือ
+- **Loading States**: แสดงสถานะการโหลดข้อมูล
+- **Error Handling**: จัดการข้อผิดพลาดอย่างเหมาะสม
+- **Animations**: เอฟเฟกต์การเคลื่อนไหวที่นุ่มนวล
+- **Color-coded Status**: ใช้สีแสดงสถานะต่างๆ
 
-## Deploy on Vercel
+## 📱 การใช้งาน
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **สมัครสมาชิก/เข้าสู่ระบบ**
+2. **ดูแดชบอร์ด**: ภาพรวมการเงินรายเดือน
+3. **เพิ่มรายการ**: บันทึกรายรับ-รายจ่าย
+4. **ตั้งงบประมาณ**: กำหนดงบประมาณสำหรับแต่ละหมวดหมู่
+5. **ติดตามผล**: ดูความคืบหน้าและรายงาน
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deployment
+
+แอปพลิเคชันนี้พร้อม deploy บน Vercel:
+
+1. Push code ไปยัง GitHub repository
+2. เชื่อมต่อ repository กับ Vercel
+3. ตั้งค่า Environment Variables ใน Vercel
+4. Deploy อัตโนมัติ
+
+## 🔮 แผนพัฒนาต่อ (Future Enhancements)
+
+- 📈 รายงานและกราฟเพิ่มเติม
+- 🎯 เป้าหมายการออม
+- 📊 การวิเคราะห์แนวโน้ม
+- 📱 Progressive Web App (PWA)
+- 🌙 Dark mode
+- 📤 Export ข้อมูลเป็น CSV/PDF
+- 🔔 การแจ้งเตือนผ่าน email
+- 💳 เชื่อมต่อกับธนาคาร (Open Banking)
+
+## 📄 License
+
+MIT License - ดูรายละเอียดใน LICENSE file
+
+## 🤝 Contributing
+
+ยินดีรับ contributions! กรุณา:
+1. Fork repository
+2. สร้าง feature branch
+3. Commit การเปลี่ยนแปลง
+4. Push ไปยัง branch
+5. เปิด Pull Request
+
+## 📞 Support
+
+หากมีปัญหาหรือข้อสงสัย กรุณาเปิด issue ใน GitHub repository
+
+---
+
+**สร้างด้วย ❤️ โดยใช้ Next.js และ Supabase**
