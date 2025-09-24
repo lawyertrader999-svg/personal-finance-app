@@ -35,18 +35,68 @@ export default function TransactionForm({
     }
   }, [user])
 
+  const createDefaultCategories = async () => {
+    if (!user) return
+    
+    const defaultCategories = [
+      // Income categories
+      { name: 'เงินเดือน', type: 'income' },
+      { name: 'ธุรกิจส่วนตัว', type: 'income' },
+      { name: 'การลงทุน', type: 'income' },
+      { name: 'อื่นๆ', type: 'income' },
+      // Expense categories
+      { name: 'อาหาร', type: 'expense' },
+      { name: 'การเดินทาง', type: 'expense' },
+      { name: 'ที่อยู่อาศัย', type: 'expense' },
+      { name: 'สาธารณูปโภค', type: 'expense' },
+      { name: 'ความบันเทิง', type: 'expense' },
+      { name: 'สุขภาพ', type: 'expense' },
+      { name: 'การศึกษา', type: 'expense' },
+      { name: 'เสื้อผ้า', type: 'expense' },
+      { name: 'อื่นๆ', type: 'expense' }
+    ]
+
+    try {
+      for (const category of defaultCategories) {
+        await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            name: category.name,
+            type: category.type
+          })
+        })
+      }
+    } catch (error) {
+      console.error('Error creating default categories:', error)
+    }
+  }
+
   const fetchCategories = async () => {
     try {
       const response = await fetch(`/api/categories?userId=${user?.id}`)
       const data = await response.json()
-      if (data.categories) {
+      
+      // If no categories exist, create default ones
+      if (!data.categories || data.categories.length === 0) {
+        await createDefaultCategories()
+        // Fetch again after creating defaults
+        const newResponse = await fetch(`/api/categories?userId=${user?.id}`)
+        const newData = await newResponse.json()
+        if (newData.categories) {
+          setCategories(newData.categories)
+        }
+      } else {
         setCategories(data.categories)
-        // Set default category if none selected
-        if (!formData.category_id && data.categories.length > 0) {
-          const defaultCategory = data.categories.find((cat: Category) => cat.type === formData.type)
-          if (defaultCategory) {
-            setFormData(prev => ({ ...prev, category_id: defaultCategory.id }))
-          }
+      }
+      
+      // Set default category if none selected
+      const currentCategories = data.categories || categories
+      if (!formData.category_id && currentCategories && currentCategories.length > 0) {
+        const defaultCategory = currentCategories.find((cat: Category) => cat.type === formData.type)
+        if (defaultCategory) {
+          setFormData(prev => ({ ...prev, category_id: defaultCategory.id }))
         }
       }
     } catch (error) {
