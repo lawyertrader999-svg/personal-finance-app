@@ -46,11 +46,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth`
+      }
     })
+    
+    // If signup successful, create default categories
+    if (!error && data.user) {
+      await createDefaultCategories(data.user.id)
+    }
+    
     return { error }
+  }
+
+  const createDefaultCategories = async (userId: string) => {
+    const defaultCategories = [
+      // Income categories
+      { name: 'เงินเดือน', type: 'income' },
+      { name: 'ธุรกิจส่วนตัว', type: 'income' },
+      { name: 'การลงทุน', type: 'income' },
+      { name: 'อื่นๆ', type: 'income' },
+      // Expense categories
+      { name: 'อาหาร', type: 'expense' },
+      { name: 'การเดินทาง', type: 'expense' },
+      { name: 'ที่อยู่อาศัย', type: 'expense' },
+      { name: 'สาธารณูปโภค', type: 'expense' },
+      { name: 'ความบันเทิง', type: 'expense' },
+      { name: 'สุขภาพ', type: 'expense' },
+      { name: 'การศึกษา', type: 'expense' },
+      { name: 'เสื้อผ้า', type: 'expense' },
+      { name: 'อื่นๆ', type: 'expense' }
+    ]
+
+    try {
+      for (const category of defaultCategories) {
+        await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            name: category.name,
+            type: category.type
+          })
+        })
+      }
+    } catch (error) {
+      console.error('Error creating default categories:', error)
+    }
   }
 
   const signIn = async (email: string, password: string) => {
