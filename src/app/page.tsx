@@ -148,29 +148,29 @@ export default function Home() {
         </div>
 
         {/* Summary Cards */}
-        {data && (
+        {data && data.summary && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <SummaryCard
               title="รายรับเดือนนี้"
-              amount={data.summary.income}
+              amount={data.summary.income || 0}
               icon={TrendingUp}
               color="green"
             />
             <SummaryCard
               title="รายจ่ายเดือนนี้"
-              amount={data.summary.expenses}
+              amount={data.summary.expenses || 0}
               icon={TrendingDown}
               color="red"
             />
             <SummaryCard
               title="คงเหลือ"
-              amount={data.summary.balance}
+              amount={data.summary.balance || 0}
               icon={Wallet}
               color="blue"
             />
             <SummaryCard
               title="งบประมาณที่ตั้ง"
-              amount={data.budgetComparison.reduce((sum, b) => sum + b.budgeted, 0)}
+              amount={data.budgetComparison ? data.budgetComparison.reduce((sum, b) => sum + (b.budgeted || 0), 0) : 0}
               icon={Target}
               color="purple"
             />
@@ -178,13 +178,13 @@ export default function Home() {
         )}
 
         {/* Charts Section */}
-        {data && (
+        {data && data.summary && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Income vs Expenses Bar Chart */}
             <BarChart
               data={[
-                { name: 'รายรับ', amount: data.summary.income },
-                { name: 'รายจ่าย', amount: data.summary.expenses }
+                { name: 'รายรับ', amount: data.summary.income || 0 },
+                { name: 'รายจ่าย', amount: data.summary.expenses || 0 }
               ]}
               title="รายรับ vs รายจ่าย"
               color="#3B82F6"
@@ -192,14 +192,14 @@ export default function Home() {
 
             {/* Expenses by Category Pie Chart */}
             <PieChart
-              data={data.expensesByCategory}
+              data={data.expensesByCategory || []}
               title="รายจ่ายตามหมวดหมู่"
             />
           </div>
         )}
 
         {/* Budget Progress */}
-        {data && data.budgetComparison.length > 0 && (
+        {data && data.budgetComparison && data.budgetComparison.length > 0 && (
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -241,7 +241,7 @@ export default function Home() {
 
         {/* Recent Transactions */}
         {data && (
-          <RecentTransactions transactions={data.recentTransactions} />
+          <RecentTransactions transactions={data.recentTransactions || []} />
         )}
 
         {/* Quick Actions */}
